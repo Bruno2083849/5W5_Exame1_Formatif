@@ -8,6 +8,10 @@ const USER_KEY = 'user';
   providedIn: 'root',
 })
 export class UserService {
+  preferCat() {
+    if(this.currentUser?.prefercat == false) return true;
+    return false;
+  }
   currentUser?: User;
 
   constructor(public route: Router) {
@@ -27,5 +31,10 @@ export class UserService {
     localStorage.removeItem(USER_KEY);
 
     this.route.navigate(['/login']);
+    console.log(this.currentUser)
+  }
+  isLogged(){
+    if(this.currentUser == undefined) return false;
+    return true;
   }
 }
