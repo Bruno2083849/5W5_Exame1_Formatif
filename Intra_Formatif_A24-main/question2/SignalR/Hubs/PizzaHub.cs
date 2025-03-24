@@ -40,9 +40,10 @@ namespace SignalR.Hubs
             int nbPi = _pizzaManager.NbPizzas[(int)choice];
             int prixPizza = _pizzaManager.PIZZA_PRICES [(int)choice];
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("UpdateNbPizzasAndMoney", prixPizza, nbPi,groupName);
             int money = _pizzaManager.Money[(int)choice];
-            await Clients.All.SendAsync("UpdateMoney", money);
+            await Clients.Group(groupName).SendAsync("UpdateNbPizzasAndMoney", prixPizza, nbPi,groupName, money);
+            
+           
         }
 
         public async Task UnselectChoice(PizzaChoice choice)
@@ -60,16 +61,22 @@ namespace SignalR.Hubs
             string groupName = Enum.GetName(typeof(PizzaChoice), choice);
 
             string connectionId = Context.ConnectionId;
-            //await _pizzaManager.IncreaseMoney.
-            //await Clients.User(connectionId).SendAsync("NewMessage", messageWithTag);
 
             _pizzaManager.IncreaseMoney(choice);
             int money = _pizzaManager.Money[(int)choice];
-            await Clients.All.SendAsync("UpdateMoney", money);
+            await Clients.Group(groupName).SendAsync("UpdateMoney", money);
         }
 
         public async Task BuyPizza(PizzaChoice choice)
         {
+            _pizzaManager.BuyPizza(choice);
+            int money = _pizzaManager.Money[(int)choice];
+            string groupName = Enum.GetName(typeof(PizzaChoice), choice);
+
+            int prixPizza = _pizzaManager.PIZZA_PRICES[(int)choice];
+            int nbPi = _pizzaManager.NbPizzas  [(int)choice];
+            await Clients.Group(groupName).SendAsync("UpdateNbPizzasAndMoney", prixPizza, nbPi, groupName, money);
+           // await Clients.Group(groupName).SendAsync("UpdateMoney", money);
         }
     }
 }

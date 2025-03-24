@@ -38,13 +38,14 @@ export class AppComponent {
       });
 
 
-      this.hubConnection.on('UpdateNbPizzasAndMoney', (prixPizza:number,nbPi:number, groupName:string) => {
+      this.hubConnection.on('UpdateNbPizzasAndMoney', (prixPizza:number,nbPi:number, groupName:string,money:number) => {
       
        console.log('Le prix '+prixPizza)
        console.log('Le nombre de '+nbPi)
        console.log('Le nom du group est '+groupName)
        this.pizzaPrice = prixPizza;
        this.nbPizzas = nbPi;
+       this.money = money;
 
 
 
@@ -91,5 +92,9 @@ export class AppComponent {
   }
 
   buyPizza() {
+    this.hubConnection!
+      .invoke('BuyPizza',  this.selectedChoice )
+      .then(() => console.log(`Pizza : ${ this.selectedChoice }`))
+      .catch((err) => console.error('Error leaving group:', err));
   }
 }
